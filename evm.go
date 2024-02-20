@@ -8,6 +8,7 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/nanmu42/etherscan-api"
+	"github.com/spf13/cobra"
 	"github.com/zeta-chain/protocol-contracts/pkg/contracts/evm/erc20custody.sol"
 	"github.com/zeta-chain/protocol-contracts/pkg/contracts/evm/zetaconnector.non-eth.sol"
 	"log"
@@ -22,6 +23,21 @@ const (
 	DonationMessage = "I am rich!"
 	MaxRange        = 1000
 )
+
+var evmCmd = &cobra.Command{
+	Use:   "evm",
+	Short: "Filter inbound eth deposits",
+	Run:   FilterEVMTransactions,
+}
+
+func init() {
+	rootCmd.AddCommand(evmCmd)
+}
+
+func FilterEVMTransactions(_ *cobra.Command, _ []string) {
+	list := GetEthHashList(StartBlock)
+	CheckForCCTX(list)
+}
 
 func GetEthHashList(startBlock uint64) []deposit {
 	client, err := ethclient.Dial("https://rpc.ankr.com/eth/2da24e4a1fd28f2bec1569eceb2c38a5694b7f5c83fd24c69ae714a89a514f9b")
